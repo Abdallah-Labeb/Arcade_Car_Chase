@@ -19,6 +19,10 @@ public class FlipDetector : MonoBehaviour
         carController = GetComponentInParent<CarController>();
         if (carController == null)
             carController = GetComponent<CarController>();
+
+        if (carController == null)
+            Debug.LogWarning($"[FlipDetector] No CarController found on '{gameObject.name}' or its parents. " +
+                             "Ground-flip detection will be disabled (only fall detection will work).");
     }
 
     private void Update()

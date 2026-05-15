@@ -10,6 +10,10 @@ public class SpeedBumpTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        // Skip cop cars — only affect the player
+        CarController cc = other.GetComponent<CarController>();
+        if (cc != null && cc.ct == cartype.cop) return;
+
         Rigidbody rb = other.GetComponent<Rigidbody>();
         if (rb == null) return;
 
