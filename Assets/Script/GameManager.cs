@@ -13,7 +13,11 @@ public class GameManager : MonoBehaviour
     public TMP_Text gameOverText;
     public TMP_FontAsset gameOverFont;
 
+    [Header("Level Display")]
+    public TMP_Text levelNameText;
+
     private bool gameRunning = true;
+    private bool levelWon;
     private Transform playerTransform;
     private Rigidbody playerRb;
     private float displayedSpeed;
@@ -48,6 +52,9 @@ public class GameManager : MonoBehaviour
             distanceText.text = "";
             distanceText.gameObject.SetActive(true);
         }
+
+        // Show level name briefly
+        ShowLevelName();
     }
 
     private void Update()
@@ -63,19 +70,74 @@ public class GameManager : MonoBehaviour
     public void OnPlayerCaught()
     {
         if (!gameRunning) return;
+        levelWon = false;
         EndGame("CAUGHT BY POLICE!", "Press R to Restart", new Color(0.9f, 0.15f, 0.15f));
     }
 
     public void OnPlayerFlipped()
     {
         if (!gameRunning) return;
+        levelWon = false;
         EndGame("CAR CRASHED!", "Press R to Restart", new Color(0.9f, 0.15f, 0.15f));
     }
 
     public void OnPlayerReachedFinish()
     {
         if (!gameRunning) return;
-        EndGame("YOU ESCAPED!", "Press R to Restart", new Color(0.1f, 0.85f, 0.2f));
+        levelWon = true;
+
+        bool isLast = LevelManager.Instance == null || LevelManager.Instance.IsLastLevel;
+
+        if (isLast)
+        {
+            EndGame("YOU WIN!", "Press R to Play Again", new Color(1f, 0.84f, 0f));
+        }
+        else
+        {
+            EndGame("LEVEL COMPLETE!", "Press SPACE for Next Level  |  R to Restart", new Color(0.1f, 0.85f, 0.2f));
+        }
+    }
+
+    // ─── Level Name Display ──────────────────────────────────
+
+    private void ShowLevelName()
+    {
+        if (levelNameText == null) return;
+
+        string name = "Level 1";
+
+        if (LevelManager.Instance != null && LevelManager.Instance.CurrentLevel != null)
+            name = LevelManager.Instance.CurrentLevel.levelName;
+
+        if (gameOverFont != null)
+            levelNameText.font = gameOverFont;
+
+        levelNameText.text = name;
+        levelNameText.gameObject.SetActive(true);
+
+        // Fade out after a few seconds
+        StartCoroutine(FadeLevelName());
+    }
+
+    private IEnumerator FadeLevelName()
+    {
+        // Show for 2 seconds
+        yield return new WaitForSeconds(2f);
+
+        // Fade out over 1 second
+        float elapsed = 0f;
+        Color startColor = levelNameText.color;
+
+        while (elapsed < 1f)
+        {
+            elapsed += Time.deltaTime;
+            float alpha = Mathf.Lerp(1f, 0f, elapsed);
+            levelNameText.color = new Color(startColor.r, startColor.g, startColor.b, alpha);
+            yield return null;
+        }
+
+        levelNameText.gameObject.SetActive(false);
+        levelNameText.color = startColor; // Reset for next time
     }
 
     // ─── Speed HUD ───────────────────────────────────────────
@@ -145,20 +207,54 @@ public class GameManager : MonoBehaviour
             gameOverText.text = $"<color=#{hex}><nobr>{title}</nobr></color>\n<size=50><color=#FFFFFF>{subtitle}</color></size>";
         }
 
-        StartCoroutine(WaitForRestart());
+        StartCoroutine(WaitForInput());
     }
 
-    private IEnumerator WaitForRestart()
+    private IEnumerator WaitForInput()
     {
         yield return new WaitForSecondsRealtime(0.5f);
-        while (!Input.GetKeyDown(KeyCode.R))
+
+        while (true)
+        {
+            // R always restarts current level
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                RestartGame();
+                yield break;
+            }
+
+            // SPACE advances to next level (only after winning and not on the last level)
+            if (levelWon && Input.GetKeyDown(KeyCode.Space))
+            {
+                LoadNextLevel();
+                yield break;
+            }
+
             yield return new WaitForSecondsRealtime(0f);
-        RestartGame();
+        }
     }
 
     private void RestartGame()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+        if (LevelManager.Instance != null)
+        {
+            LevelManager.Instance.RestartCurrentLevel();
+        }
+        else
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        }
+    }
+
+    private void LoadNextLevel()
+    {
+        Time.timeScale = 1f;
+
+        if (LevelManager.Instance != null)
+        {
+            LevelManager.Instance.LoadNextLevel();
+        }
     }
 }

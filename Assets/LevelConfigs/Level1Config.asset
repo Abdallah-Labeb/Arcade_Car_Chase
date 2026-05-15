@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2cf4e6148b34a148b9075a45cb7671e, type: 3}
+  m_Name: Level1Config
+  m_EditorClassIdentifier: Assembly-CSharp::LevelConfig
+  levelName: Level 1
+  sceneName: Level
+  copBaseThrottle: 0.8
+  copMaxSpeed: 45
+  copStartOffset: 15
+  playerMaxSpeed: 45
