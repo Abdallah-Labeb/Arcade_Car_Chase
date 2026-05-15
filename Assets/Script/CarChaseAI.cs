@@ -78,17 +78,30 @@ public class CarChaseAI : MonoBehaviour
         Vector3 localTarget = transform.InverseTransformPoint(target.position);
         float steerInput = Mathf.Clamp(localTarget.x / Mathf.Max(Mathf.Abs(localTarget.z), 2f), -1f, 1f);
 
+        // Reverse steering if player is behind
+        bool isBehind = localTarget.z < -0.5f;
+        if (isBehind) steerInput *= -1f; 
+
         // Prevent steering off the edge
         if (transform.position.x > trackWidth - 0.5f && steerInput > 0) steerInput = 0;
         if (transform.position.x < -trackWidth + 0.5f && steerInput < 0) steerInput = 0;
 
         steerInput *= steerAgression;
 
-        // Throttle with catch-up boost
+        // Throttle with catch-up boost and reverse logic
         float throttle = speedMultiplier;
-        if (dist > 10f) throttle *= 1.5f;
-        if (dist > 25f) throttle *= 2.5f;
-        throttle *= Mathf.Lerp(0.7f, 1f, 1f - Mathf.Abs(steerInput) * 0.3f);
+        
+        if (isBehind)
+        {
+            // Reverse or brake hard
+            throttle = -1f; 
+        }
+        else
+        {
+            if (dist > 10f) throttle *= 1.5f;
+            if (dist > 25f) throttle *= 2.5f;
+            throttle *= Mathf.Lerp(0.7f, 1f, 1f - Mathf.Abs(steerInput) * 0.3f);
+        }
 
         carController.GetAIInput(throttle, steerInput);
     }

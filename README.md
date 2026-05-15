@@ -2,6 +2,8 @@
 
 A simple arcade-style car escape game built with Unity. Drive your car through obstacles and try to reach the finish line before the police catch you.
 
+**[Play the game](https://abdallah-labeb.itch.io/arcade-car-chase)**
+
 ## Gameplay
 
 - You control a car driving forward on a straight track filled with obstacles (speed bumps, barriers).

@@ -20,6 +20,7 @@ public class CarController : MonoBehaviour
     public float coastDrag = 0.5f;
     public float driveDrag = 0.05f;
     public float brakeForce = 12f;
+    public float sideGrip = 5f; // New: High value = less sliding
 
     [Header("Ground Detection")]
     public LayerMask whatIsGround;
@@ -131,6 +132,11 @@ public class CarController : MonoBehaviour
 
         if (canMove)
         {
+            // --- Sideways Grip Logic ---
+            // Remove some sideways velocity to prevent sliding
+            Vector3 sideVelocity = transform.right * Vector3.Dot(rb.linearVelocity, transform.right);
+            rb.AddForce(-sideVelocity * sideGrip, ForceMode.Acceleration);
+
             if (braking && ct == cartype.player)
             {
                 float speed = rb.linearVelocity.magnitude;
