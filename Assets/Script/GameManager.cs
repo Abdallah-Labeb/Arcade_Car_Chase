@@ -25,6 +25,12 @@ public class GameManager : MonoBehaviour
         Instance = this;
     }
 
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
+    }
+
     private void Start()
     {
         Time.timeScale = 1f;
@@ -146,7 +152,7 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(0.5f);
         while (!Input.GetKeyDown(KeyCode.R))
-            yield return null;
+            yield return new WaitForSecondsRealtime(0f);
         RestartGame();
     }
 
