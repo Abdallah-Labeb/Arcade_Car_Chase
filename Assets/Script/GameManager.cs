@@ -88,7 +88,7 @@ public class GameManager : MonoBehaviour
             rt.anchoredPosition = new Vector2(-60, 60);
             distanceText.fontSize = 100;
             distanceText.alignment = TextAlignmentOptions.BottomRight;
-            distanceText.enableWordWrapping = false;
+            distanceText.textWrappingMode = TextWrappingModes.NoWrap;
 
             Material mat = distanceText.fontMaterial;
             mat.EnableKeyword("OUTLINE_ON");
@@ -120,7 +120,7 @@ public class GameManager : MonoBehaviour
             gameOverText.rectTransform.sizeDelta = new Vector2(1000, 400);
             gameOverText.rectTransform.anchoredPosition = new Vector2(0, 180f);
             gameOverText.fontStyle = FontStyles.Bold;
-            gameOverText.enableWordWrapping = false;
+            gameOverText.textWrappingMode = TextWrappingModes.NoWrap;
             gameOverText.enableAutoSizing = true;
             gameOverText.fontSizeMin = 40;
             gameOverText.fontSizeMax = 150;
